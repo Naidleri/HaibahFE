@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Coffee, Sparkles, Zap, Candy, Wine } from 'lucide-react';
+import { useAuth } from '../provider/AuthProvider';
+import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar.jsx';
 
 export default function CoffeeClassifier() {
+  const { user, token } = useAuth();
+  const isAuthed = Boolean(user || token);
   const [formData, setFormData] = useState({
     aroma: '',
     flavor: '',
@@ -51,7 +56,9 @@ export default function CoffeeClassifier() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{
+    <>
+    <Navbar />
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20" style={{
       background: 'linear-gradient(135deg, #c9a884 0%, #d4a574 50%, #b8956a 100%)'
     }}>
       <div className="w-full max-w-2xl bg-gradient-to-br from-amber-700 to-amber-800 rounded-3xl shadow-2xl overflow-hidden">
@@ -154,11 +161,18 @@ export default function CoffeeClassifier() {
           </div>
           <button
             onClick={predictSpecies}
-            className="w-full bg-amber-700 hover:bg-amber-800 text-white font-semibold py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            disabled={!isAuthed}
+            className="w-full bg-amber-700 hover:bg-amber-800 disabled:bg-amber-600/70 disabled:cursor-not-allowed disabled:hover:bg-amber-600/70 text-white font-semibold py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
           >
             <Sparkles className="w-5 h-5" />
             Prediksi Spesies Kopi
           </button>
+          {!isAuthed && (
+            <p className="mt-2 text-sm text-red-600 text-center">
+              Anda perlu login untuk memprediksi.{' '}
+              <Link to="/login" className="text-amber-700 hover:text-amber-800 underline">Masuk</Link>
+            </p>
+          )}
           {result && (
             <div className="mt-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6 animate-fadeIn">
               <div className="text-center">
@@ -182,5 +196,6 @@ export default function CoffeeClassifier() {
         </div>
       </div>
     </div>
+    </>
   );
 }
