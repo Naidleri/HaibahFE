@@ -55,7 +55,7 @@ export default function Register() {
               </svg>
             </div>
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Coffee Detect</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-2">Haibah Coffe</h2>
           <p className="text-lg text-gray-600">Buat akun baru Anda</p>
         </div>
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
