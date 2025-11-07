@@ -124,7 +124,6 @@ export default function Register() {
           setFieldErrors(prev => ({
             ...prev,
             password: !v ? 'Password harus diisi' : (v.length >= 8 ? '' : 'Password minimal 8 karakter'),
-            // keep confirmation in sync if already filled
             ...(passwordConfirmation !== '' ? {
               passwordConfirmation: !passwordConfirmation
                 ? 'Konfirmasi password harus diisi'
@@ -190,7 +189,6 @@ export default function Register() {
                         try {
                           const res = await register({ name, email, password });
                           console.log('Register success:', res);
-                          // Sukses daftar: arahkan ke halaman login dan isi email otomatis
                           navigate('/login', { state: { justRegistered: true, email } });
                         } catch (err) {
                           console.error('Register error:', err);

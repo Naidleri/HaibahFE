@@ -49,3 +49,7 @@ export async function updateUser(id, data, token) {
 export async function deleteUser(id, token) {
   return request(`/api/user/delete/${id}`, { method: 'DELETE', token });
 }
+
+export async function getHistoryByUserId(id, token) {
+  return request(`/api/history/${id}`, { method: 'GET', token });
+}

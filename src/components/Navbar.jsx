@@ -9,12 +9,9 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur border-b border-gray-200 z-50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Left brand */}
         <Link to="/" className="text-amber-700 font-semibold tracking-wide">
           Haibah
         </Link>
-
-        {/* Right user/login action */}
         {isAuthed ? (
           <Link
             to="/user"
