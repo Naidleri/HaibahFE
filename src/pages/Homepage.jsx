@@ -72,8 +72,7 @@ export default function CoffeeClassifier() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
+          <div className="">
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="bg-linear-to-r from-amber-500 to-orange-600 px-6 py-4">
