@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../provider/AuthProvider';
 import * as authServices from '../services/authServices';
-import * as historyModel from '../models/historyModel';
+import * as historyServices from '../services/historyServices.jsx';
 import Navbar from '../components/Navbar.jsx';
 
 export default function User() {
@@ -62,14 +62,14 @@ export default function User() {
       setHistoryLoading(true);
       setHistoryError(null);
       try {
-        const res = await historyModel.readHistoryByUserId(uid, token);
+        const res = await historyServices.getHistoryByUserId(uid, token);
         const list = (res?.data || res || []).map((item) => ({
           id: item.id,
-          species: item.hasil || item.prediction_result || item.result || 'unknown',
+          species: item.prediction_result || item.hasil || item.result || 'unknown',
           number: item.number_prediction ?? null,
           createdAt: item.createdAt || new Date().toISOString(),
         }));
-        setHistory(list.slice(0, 10));
+        setHistory(list.reverse().slice(0, 50));
       } catch (e) {
         setHistory([]);
         setHistoryError(e?.message || 'Gagal memuat riwayat');

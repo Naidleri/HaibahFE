@@ -3,6 +3,7 @@ import { Coffee, Sparkles, Zap, Candy, Wine, TrendingUp, Award } from 'lucide-re
 import { useAuth } from '../provider/AuthProvider';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
+import * as historyServices from '../services/historyServices.jsx';
 
 export default function CoffeeClassifier() {
   const { user, token } = useAuth();
@@ -23,7 +24,7 @@ export default function CoffeeClassifier() {
     }));
   };
 
-  const predictSpecies = () => {
+  const predictSpecies = async () => {
     const values = Object.values(formData);
     const allFilled = values.every(v => v !== '');
     
@@ -51,7 +52,36 @@ export default function CoffeeClassifier() {
       confidence = 75;
     }
     
-    setResult({ species, confidence, average: avg.toFixed(1) });
+    const finalResult = { species, confidence, average: avg.toFixed(1) };
+    setResult(finalResult);
+
+    try {
+      if (isAuthed) {
+        const body = {
+          Aroma: parseFloat(formData.aroma),
+          Flavor: parseFloat(formData.flavor),
+          Aftertaste: parseFloat(formData.aftertaste),
+          Acidity: parseFloat(formData.acidity),
+          Sweetness: parseFloat(formData.sweetness)
+        };
+        const decodeJwt = (jwt) => {
+          try {
+            const [, payload] = jwt.split('.');
+            const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const padded = base64.padEnd(base64.length + (4 - (base64.length % 4 || 4)) % 4, '=');
+            const json = atob(padded);
+            return JSON.parse(json);
+          } catch (e) { return null; }
+        };
+        const payload = decodeJwt(token);
+        const id = payload?.id;
+        if (id) {
+          await historyServices.postHistoryByUserId(id, body, token);
+        }
+      }
+    } catch (e) {
+      console.error('Gagal menyimpan riwayat prediksi:', e);
+    }
   };
 
   return (
