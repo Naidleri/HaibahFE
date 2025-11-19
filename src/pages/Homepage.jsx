@@ -33,54 +33,51 @@ export default function CoffeeClassifier() {
       return;
     }
 
-    const avg = values.reduce((sum, v) => sum + parseFloat(v), 0) / values.length;
-    
-    let species = '';
-    let confidence = 0;
-    
-    if (avg >= 8) {
-      species = 'Arabica Premium';
-      confidence = 95;
-    } else if (avg >= 6.5) {
-      species = 'Arabica';
-      confidence = 88;
-    } else if (avg >= 5) {
-      species = 'Robusta';
-      confidence = 82;
-    } else {
-      species = 'Liberica';
-      confidence = 75;
+    if (!isAuthed) {
+      alert('Anda harus login untuk melakukan prediksi!');
+      return;
     }
-    
-    const finalResult = { species, confidence, average: avg.toFixed(1) };
-    setResult(finalResult);
 
     try {
-      if (isAuthed) {
-        const body = {
-          Aroma: parseFloat(formData.aroma),
-          Flavor: parseFloat(formData.flavor),
-          Aftertaste: parseFloat(formData.aftertaste),
-          Acidity: parseFloat(formData.acidity),
-          Sweetness: parseFloat(formData.sweetness)
-        };
-        const decodeJwt = (jwt) => {
-          try {
-            const [, payload] = jwt.split('.');
-            const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-            const padded = base64.padEnd(base64.length + (4 - (base64.length % 4 || 4)) % 4, '=');
-            const json = atob(padded);
-            return JSON.parse(json);
-          } catch (e) { return null; }
-        };
-        const payload = decodeJwt(token);
-        const id = payload?.id;
-        if (id) {
-          await historyServices.postHistoryByUserId(id, body, token);
-        }
+      const body = {
+        Aroma: parseFloat(formData.aroma),
+        Flavor: parseFloat(formData.flavor),
+        Aftertaste: parseFloat(formData.aftertaste),
+        Acidity: parseFloat(formData.acidity),
+        Sweetness: parseFloat(formData.sweetness)
+      };
+      
+      const decodeJwt = (jwt) => {
+        try {
+          const [, payload] = jwt.split('.');
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+          const padded = base64.padEnd(base64.length + (4 - (base64.length % 4 || 4)) % 4, '=');
+          const json = atob(padded);
+          return JSON.parse(json);
+        } catch (e) { return null; }
+      };
+      
+      const payload = decodeJwt(token);
+      const id = payload?.id;
+      
+      if (!id) {
+        alert('Tidak dapat membaca informasi user dari token');
+        return;
+      }
+
+      const response = await historyServices.postHistoryByUserId(id, body, token);
+      
+      if (response?.data) {
+        const avg = values.reduce((sum, v) => sum + parseFloat(v), 0) / values.length;
+        setResult({
+          species: response.data.prediction_result || 'Unknown',
+          confidence: 90,
+          average: avg.toFixed(1)
+        });
       }
     } catch (e) {
-      console.error('Gagal menyimpan riwayat prediksi:', e);
+      console.error('Gagal melakukan prediksi:', e);
+      alert('Gagal melakukan prediksi. Silakan coba lagi.');
     }
   };
 
